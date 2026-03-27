@@ -8,7 +8,7 @@ interface Worker {
 }
 
 interface TextInputProps {
-  onSendMessage: (text: string, imageUrl?: string, targetWorkers?: string[]) => void;
+  onSendMessage: (text: string, imageUrl?: string, targetWorkers?: string[], taskType?: string) => void;
   isLoading: boolean;
   workers: Worker[];
 }
@@ -16,6 +16,7 @@ interface TextInputProps {
 export const TextInput: React.FC<TextInputProps> = ({ onSendMessage, isLoading, workers }) => {
   const [text, setText] = useState('');
   const [targetWorkers, setTargetWorkers] = useState<string[]>([]);
+  const [taskType, setTaskType] = useState<'chatgpt' | 'gemini'>('chatgpt');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
@@ -87,7 +88,7 @@ export const TextInput: React.FC<TextInputProps> = ({ onSendMessage, isLoading, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if ((text.trim() || imagePreview) && !isLoading) {
-      onSendMessage(text, imagePreview || undefined, targetWorkers);
+      onSendMessage(text, imagePreview || undefined, targetWorkers, taskType);
       setText('');
       removeImage();
       // Tùy chọn: Nhấn gửi xong thì reset lại là Auto hay giữ nguyên máy? Giữ nguyên máy sẽ tiện hơn cho user.
@@ -165,12 +166,36 @@ export const TextInput: React.FC<TextInputProps> = ({ onSendMessage, isLoading, 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent"
               disabled={isLoading}
               title="Đính kèm Hình ảnh"
             >
               <ImageIcon size={20} />
             </button>
+
+            {/* TASK TYPE SELECTOR */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5 ml-1 border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setTaskType('chatgpt')}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  taskType === 'chatgpt' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+                disabled={isLoading}
+              >
+                ChatGPT
+              </button>
+              <button
+                type="button"
+                onClick={() => setTaskType('gemini')}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  taskType === 'gemini' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+                disabled={isLoading}
+              >
+                Gemini
+              </button>
+            </div>
 
             {/* CUSTOM MULTI-SELECT DROPDOWN */}
             <div className="relative" ref={dropdownRef}>

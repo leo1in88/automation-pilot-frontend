@@ -47,7 +47,7 @@ function App() {
     }
   };
 
-  const handleSendMessage = async (text: string, imageUrl?: string, targetWorkers?: string[]) => {
+  const handleSendMessage = async (text: string, imageUrl?: string, targetWorkers?: string[], taskType: string = 'chatgpt') => {
     setLoading(true);
     let finalImageUrl = imageUrl;
 
@@ -68,7 +68,7 @@ function App() {
         }
       }
 
-      // Gửi lệnh tạo Task với URL ảnh thật (R2)
+      // Gửi lệnh tạo Task với URL ảnh thật (R2) và loại Task
       const res = await fetch(`${API_BASE_URL}/run-automation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ function App() {
             content: text, 
             image_url: finalImageUrl, 
             target_workers: targetWorkers,
-            task_type: 'chatgpt' 
+            task_type: taskType 
         })
       });
       if (!res.ok) throw new Error("Failed to send task");
