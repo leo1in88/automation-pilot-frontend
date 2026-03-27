@@ -3,7 +3,8 @@ import { WorkerStatus } from './components/WorkerStatus';
 import { TaskQueue } from './components/TaskQueue';
 import { TextInput } from './components/TextInput';
 import { RecentHistory } from './components/RecentHistory';
-import { Bot, LineChart, Settings, LayoutDashboard, ShoppingCart } from 'lucide-react';
+import { ResultsGrid } from './components/ResultsGrid';
+import { Bot, LineChart, Settings, LayoutDashboard, Grid } from 'lucide-react';
 import './App.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://automation-api.your-subdomain.workers.dev/api';
@@ -12,6 +13,7 @@ function App() {
   const [workers, setWorkers] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'results'>('dashboard');
 
   // 1. Fetch initial Data & Setup Polling
   useEffect(() => {
@@ -115,11 +117,15 @@ function App() {
 
         {/* Feature Buttons */}
         <div className="flex items-center gap-2 bg-gray-50/80 p-1.5 rounded-lg border border-gray-100 overflow-x-auto w-full md:w-auto hide-scrollbar">
-          <button className="flex items-center gap-2 px-3 lg:px-4 py-2 bg-white rounded-md text-sm font-medium text-indigo-700 shadow-sm border border-gray-200/50 shrink-0">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0 ${activeTab === 'dashboard' ? 'bg-white text-indigo-700 shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-white'}`}>
             <LayoutDashboard size={16} /> Dashboard
           </button>
-          <button className="flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-white rounded-md transition-colors shrink-0">
-            <ShoppingCart size={16} /> <span className="hidden md:inline">E-Commerce</span>
+          <button 
+            onClick={() => setActiveTab('results')}
+            className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0 ${activeTab === 'results' ? 'bg-white text-indigo-700 shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-white'}`}>
+            <Grid size={16} /> <span className="hidden md:inline">Results</span>
           </button>
           <button className="flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-white rounded-md transition-colors shrink-0">
             <LineChart size={16} /> <span className="hidden md:inline">Analytics</span>
@@ -130,28 +136,30 @@ function App() {
         </div>
       </header>
 
-      {/* Main 3-Column Layout Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-[#FAFAFA]">
+      {/* Main Layout Workspace - Conditional Rendering */}
+      {activeTab === 'dashboard' ? (
+        <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-[#FAFAFA]">
+          {/* Left Column: Worker Status */}
+          <WorkerStatus workers={workers} />
 
-        {/* Left Column: Worker Status */}
-        <WorkerStatus workers={workers} />
+          {/* Center Column: Command Input & Feed */}
+          <div className="flex-1 flex flex-col p-4 lg:p-6 w-full relative min-h-0 lg:h-full overflow-visible lg:overflow-y-auto shrink-0 lg:shrink order-3 lg:order-none bg-white lg:shadow-xl lg:shadow-gray-200/40 lg:rounded-t-3xl lg:border lg:border-gray-100 lg:mt-2">
+            {/* Top Panel: Task Input Area */}
+            <div className="shrink-0 mb-4 lg:mb-2">
+              <h2 className="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4 tracking-tight px-1">Create Automation Task</h2>
+              <TextInput onSendMessage={handleSendMessage} isLoading={loading} workers={workers} />
+            </div>
 
-        {/* Center Column: Command Input & Feed */}
-        <div className="flex-1 flex flex-col p-4 lg:p-6 w-full relative min-h-0 lg:h-full overflow-visible lg:overflow-y-auto shrink-0 lg:shrink order-3 lg:order-none bg-white lg:shadow-xl lg:shadow-gray-200/40 lg:rounded-t-3xl lg:border lg:border-gray-100 lg:mt-2">
-          {/* Top Panel: Task Input Area */}
-          <div className="shrink-0 mb-4 lg:mb-2">
-            <h2 className="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4 tracking-tight px-1">Create Automation Task</h2>
-            <TextInput onSendMessage={handleSendMessage} isLoading={loading} workers={workers} />
+            {/* Bottom Feed: Recent History Log */}
+            <RecentHistory tasks={tasks} />
           </div>
 
-          {/* Bottom Feed: Recent History Log */}
-          <RecentHistory tasks={tasks} />
+          {/* Right Column: Task Queue */}
+          <TaskQueue tasks={tasks} onClearQueue={handleClearQueue} />
         </div>
-
-        {/* Right Column: Task Queue */}
-        <TaskQueue tasks={tasks} onClearQueue={handleClearQueue} />
-
-      </div>
+      ) : (
+        <ResultsGrid tasks={tasks} />
+      )}
 
     </div>
   );
