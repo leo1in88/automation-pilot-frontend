@@ -23,12 +23,12 @@ export const WorkerStatus: React.FC<WorkerStatusProps> = ({ workers }) => {
             <div key={worker.id} className="flex flex-col bg-white p-2.5 lg:p-3 border border-gray-100 rounded-xl shadow-sm hover:border-indigo-100 transition-colors min-w-[140px] lg:min-w-0 flex-shrink-0 snap-start">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className={`relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 rounded-full ${worker.status === 'idle' ? 'bg-green-500' : worker.status === 'busy' ? 'bg-yellow-500' : 'bg-gray-400'}`}>
-                    {worker.status === 'busy' && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>}
+                  <span className={`relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 rounded-full ${worker.status === 'idle' ? 'bg-green-500' : worker.status === 'busy' ? 'bg-indigo-500' : 'bg-yellow-500'}`}>
+                    {worker.status === 'busy' && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>}
                   </span>
                   <span className="text-xs lg:text-sm font-semibold text-gray-800 truncate">{worker.id}</span>
                 </div>
-                <span className={`text-[9px] lg:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${worker.status === 'idle' ? 'bg-green-100 text-green-700' : worker.status === 'busy' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
+                <span className={`text-[9px] lg:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${worker.status === 'idle' ? 'bg-green-100 text-green-700' : worker.status === 'busy' ? 'bg-indigo-100 text-indigo-700' : 'bg-yellow-100 text-yellow-700'}`}>
                   {worker.status}
                 </span>
               </div>
